@@ -1,0 +1,18 @@
+FROM <%= os %>
+
+# Add basic required tools based on OS type
+<% if (os.includes('ubuntu') || os.includes('debian')) { %>
+RUN apt-get update && apt-get install -y curl vim git && rm -rf /var/lib/apt/lists/*
+<% } else if (os.includes('alpine')) { %>
+RUN apk update && apk add curl vim git
+<% } else if (os.includes('centos')) { %>
+RUN yum update -y && yum install -y curl vim git && yum clean all
+<% } else { %>
+# Default base dependencies fallback
+# RUN apt-get update && apt-get install -y curl vim git
+<% } %>
+
+WORKDIR /app
+
+# The default command will just open a shell
+CMD ["/bin/sh"]
