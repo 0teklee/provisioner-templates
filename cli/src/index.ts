@@ -4,6 +4,7 @@ import inquirer from "inquirer";
 import {promptUserForConfig} from "./prompts.js";
 import {generateConfig} from "./generator.js";
 import {runProvisioner} from "./provisioner.js";
+import {i18n} from "./i18n.js";
 
 const program = new Command();
 
@@ -24,11 +25,13 @@ program
 
       await generateConfig(config);
 
+      const t = i18n[config.language];
+
       const {run} = await inquirer.prompt([
         {
           type: "confirm",
           name: "run",
-          message: "Do you want to run the provisioning now?",
+          message: t.runProvisioning,
           default: true,
         },
       ]);
@@ -36,9 +39,7 @@ program
       if (run) {
         await runProvisioner(config, process.cwd());
       } else {
-        console.log(
-          "\nSkipping provisioning. Your configuration files have been generated.",
-        );
+        console.log(t.skipProvisioning);
       }
     } catch (error) {
       console.error("An error occurred:", error);
