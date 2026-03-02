@@ -22,7 +22,6 @@ export async function promptUserForConfig(): Promise<VmConfig> {
       choices: ["English", "한국어 (Korean)"],
     },
   ]);
-  console.log("DEBUG: langPrompt =", langPrompt);
 
   const langKey = langPrompt.language === "English" ? "en" : "ko";
 
@@ -71,21 +70,42 @@ export async function promptUserForConfig(): Promise<VmConfig> {
         answers.preset === t.setupManual && answers.provider === "docker",
     },
     {
-      type: "number",
+      type: "list",
       name: "ram",
       message: t.ram,
+      choices: [
+        {name: "1024 MB", value: 1024},
+        {name: "2048 MB", value: 2048},
+        {name: "4096 MB", value: 4096},
+        {name: "8192 MB", value: 8192},
+        {name: "16384 MB", value: 16384},
+      ],
       default: 2048,
     },
     {
-      type: "number",
+      type: "list",
       name: "cpu",
       message: t.cpu,
+      choices: [
+        {name: "1 Core", value: 1},
+        {name: "2 Cores", value: 2},
+        {name: "4 Cores", value: 4},
+        {name: "8 Cores", value: 8},
+        {name: "16 Cores", value: 16},
+      ],
       default: 2,
     },
     {
-      type: "number",
+      type: "list",
       name: "disk",
       message: t.disk,
+      choices: [
+        {name: "10 GB", value: 10},
+        {name: "20 GB", value: 20},
+        {name: "40 GB", value: 40},
+        {name: "80 GB", value: 80},
+        {name: "160 GB", value: 160},
+      ],
       default: 20,
       when: (answers: any) =>
         answers.preset === t.setupKaliPreset || answers.provider !== "docker", // Docker usually handles disk separately
