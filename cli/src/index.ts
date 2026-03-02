@@ -29,9 +29,13 @@ program
 
       const {run} = await inquirer.prompt([
         {
-          type: "confirm",
+          type: "list",
           name: "run",
           message: t.runProvisioning,
+          choices: [
+            {name: "Yes", value: true},
+            {name: "No", value: false},
+          ],
           default: true,
         },
       ]);
