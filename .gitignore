@@ -1,2 +1,4 @@
 .DS_Store
 rules
+node_modules
+dist
