@@ -19,11 +19,14 @@ export async function promptUserForConfig(): Promise<VmConfig> {
       type: "list",
       name: "language",
       message: "Select language / 언어 선택 (en/ko) ",
-      choices: ["English", "한국어 (Korean)"],
+      choices: [
+        {name: "English", value: "en"},
+        {name: "한국어 (Korean)", value: "ko"},
+      ],
     },
   ]);
 
-  const langKey = langPrompt.language === "English" ? "en" : "ko";
+  const langKey = langPrompt.language as Language;
 
   const t = i18n[langKey];
 
@@ -32,14 +35,17 @@ export async function promptUserForConfig(): Promise<VmConfig> {
       type: "list",
       name: "preset",
       message: t.setupType,
-      choices: [t.setupManual, t.setupKaliPreset],
+      choices: [
+        {name: t.setupManual, value: "manual"},
+        {name: t.setupKaliPreset, value: "kali"},
+      ],
     },
     {
       type: "list",
       name: "provider",
       message: t.provider,
       choices: ["virtualbox", "vmware", "docker"],
-      when: (answers: any) => answers.preset === t.setupManual,
+      when: (answers: any) => answers.preset === "manual",
     },
     {
       type: "list",
@@ -53,7 +59,7 @@ export async function promptUserForConfig(): Promise<VmConfig> {
         "kalilinux/rolling",
       ],
       when: (answers: any) =>
-        answers.preset === t.setupManual && answers.provider !== "docker",
+        answers.preset === "manual" && answers.provider !== "docker",
     },
     {
       type: "list",
@@ -67,7 +73,7 @@ export async function promptUserForConfig(): Promise<VmConfig> {
         "python:latest",
       ],
       when: (answers: any) =>
-        answers.preset === t.setupManual && answers.provider === "docker",
+        answers.preset === "manual" && answers.provider === "docker",
     },
     {
       type: "list",
@@ -108,7 +114,7 @@ export async function promptUserForConfig(): Promise<VmConfig> {
       ],
       default: 20,
       when: (answers: any) =>
-        answers.preset === t.setupKaliPreset || answers.provider !== "docker", // Docker usually handles disk separately
+        answers.preset === "kali" || answers.provider !== "docker", // Docker usually handles disk separately
     },
     {
       type: "list",
@@ -117,7 +123,7 @@ export async function promptUserForConfig(): Promise<VmConfig> {
       choices: ["nat", "bridged", "host-only"],
       default: "nat",
       when: (answers: any) =>
-        answers.preset === t.setupManual && answers.provider !== "docker",
+        answers.preset === "manual" && answers.provider !== "docker",
     },
     {
       type: "list",
@@ -128,14 +134,11 @@ export async function promptUserForConfig(): Promise<VmConfig> {
   ]);
 
   // Handle defaults for Kali preset
-  if (answers.preset === t.setupKaliPreset) {
+  if (answers.preset === "kali") {
     answers.provider = "virtualbox";
     answers.os = "kalilinux/rolling";
     answers.network = "kali-preset";
   }
-
-  const presetKey = answers.preset === t.setupManual ? "manual" : "kali";
-  answers.preset = presetKey;
 
   return {language: langKey, ...answers} as VmConfig;
 }
