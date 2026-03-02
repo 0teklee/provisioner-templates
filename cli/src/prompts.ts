@@ -18,7 +18,7 @@ export async function promptUserForConfig(): Promise<VmConfig> {
     {
       type: "list",
       name: "language",
-      message: "Select language / 언어 선택",
+      message: "Select language / 언어 선택 (en/ko) ",
       choices: ["English", "한국어 (Korean)"],
     },
   ]);
