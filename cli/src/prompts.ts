@@ -1,10 +1,11 @@
+import os from "os";
 import inquirer from "inquirer";
 import {i18n, Language} from "./i18n.js";
 
 export interface VmConfig {
   language: Language;
   preset: "manual" | "kali";
-  provider: "virtualbox" | "vmware" | "docker";
+  provider: "virtualbox" | "vmware_desktop" | "docker";
   os: string;
   ram: number;
   cpu: number;
@@ -44,7 +45,7 @@ export async function promptUserForConfig(): Promise<VmConfig> {
       type: "list",
       name: "provider",
       message: t.provider,
-      choices: ["virtualbox", "vmware", "docker"],
+      choices: ["virtualbox", "vmware_desktop", "docker"],
       when: (answers: any) => answers.preset === "manual",
     },
     {
@@ -135,7 +136,8 @@ export async function promptUserForConfig(): Promise<VmConfig> {
 
   // Handle defaults for Kali preset
   if (answers.preset === "kali") {
-    answers.provider = "virtualbox";
+    const isArm = os.arch() === "arm64";
+    answers.provider = isArm ? "vmware_desktop" : "virtualbox";
     answers.os = "kalilinux/rolling";
     answers.network = "kali-preset";
   }
